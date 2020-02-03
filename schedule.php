@@ -5,7 +5,7 @@
 $error = $error1 = "";
 $DivName_err=$DivName_err1=$DivHead_err=$DivCon_err=$DivLoc_err=$DivMail_err=$DivLoc1=$Bank_Account_number_err=$Bank_Account_number_err2=$Bank_Account_number_err3=$Bank_Account_number_err4=$Bank_Account_number_err5="";
 $DivName=$DivName1=$DivHead=$DivCon=$DivLoc=$DivLoc1=$DivMail="";
-$T_id = $id = $mark1 = $mark2= $mark3= $mark4= $mark5= $mark6= $mark7= $mark8= $mark9= $mark10= $mark11= $mark12= $mark13 = $done = $job = $ntrain = $Title = $Topic= $project = $P1 = $P2 = $P3 = $div = $Dv3 = $Dv2 = $Dv1 = $SDAY = $EDAY = $Sup = $DIVI = $Name = $Name_with_Initials = $NIC = $Age = $Gender = $DOB = $Add_Line1 = $Add_Line2 = $Add_Line3 = $Temp_Add_Line1 = $Temp_Add_Line2 = $Temp_Add_Line3 = $Contact_Number1 = $Contact_Number2 = $E_Mail = $tblTrainingInstituteID = $ProgramName = $tblCourseID = $Batch = $Year = $Contact_Person = $Contact_number = $Relationship = $Address = $tblBankID = $Name_as_Bank = $Bank_Account_number = $flag = $branch = "";
+$T_id = $id = $mark1 = $mark2= $mark3= $mark4= $mark5= $mark6= $mark7= $mark8= $mark9= $mark10= $mark11= $mark12= $mark13 = $done = $job = $ntrain = $Title = $Topic= $project = $P1 = $P2 = $P3 = $div = $Dv3 = $Dv2 = $Dv1 = $SDAY = $com = $EDAY = $Sup = $DIVI = $Name = $Name_with_Initials = $NIC = $Age = $Gender = $DOB = $Add_Line1 = $Add_Line2 = $Add_Line3 = $Temp_Add_Line1 = $Temp_Add_Line2 = $Temp_Add_Line3 = $Contact_Number1 = $Contact_Number2 = $E_Mail = $tblTrainingInstituteID = $ProgramName = $tblCourseID = $Batch = $Year = $Contact_Person = $Contact_number = $Relationship = $Address = $tblBankID = $Name_as_Bank = $Bank_Account_number = $flag = $branch = "";
 
 
 
@@ -82,8 +82,15 @@ if ($resultSet->num_rows >= 1) {
         
         $sql1 = "INSERT INTO  tbl_schedule1 ( Trainee_ID, sub_item, supervisor, startdate, enddate, sequence, remark)
         VALUES( '$id', '$com', '$done','$mark1','$mark4','$mark2','$mark3')";
+        $sql71 = "UPDATE `tbl_trainee` SET `tblDivisionID`='" . $_POST["Name"] . "' WHERE 	Trainee_ID = '" . $_POST["v_id"] . "'";
+        
+        $sql9 = "UPDATE tbl_schedule1 SET flag='INACTIVE' WHERE enddate < CURRENT_DATE()  ";
+
 
     if ($con->query($sql1) === TRUE) {
+        if ($con->query($sql71) === TRUE) {
+            if ($con->query($sql9) === TRUE) {
+        
 
        $error2 = "New Shedule added successfully";
 
@@ -94,7 +101,10 @@ if ($resultSet->num_rows >= 1) {
 
     $con->close();
 
+
+}  
 }
+ }
 
 }
 
@@ -102,6 +112,10 @@ if ($resultSet->num_rows >= 1) {
 }        
 
 
+
+//$sql10 = "UPDATE tbl_trainee SET flag='ACTIVE' WHERE edate > CURRENT_DATE()";
+
+//$con->query($sql9);
 
 
 
@@ -213,7 +227,7 @@ tr:hover {background-color: #e6c3c8;}
                                 <div class="col-sm-8">
                                     <input type="text" class="form-control" name="v_id"
                                            id="v_id"
-                                           placeholder="Enter Trainee ID" autofocus="autofocus"onblur="this.value=this.value.toUpperCase()"  value="<?php if(isset($_POST['btnSubmit'])){
+                                           placeholder="Enter Trainee ID"  value ="MOB/TR/"autofocus="autofocus"onblur="this.value=this.value.toUpperCase()"  value="<?php if(isset($_POST['btnSubmit'])){
                                         echo $_POST['v_id'];} ?>" >
 
                                         <?php if (isset($_POST["btnSubmit"])) { ?>
@@ -242,15 +256,18 @@ tr:hover {background-color: #e6c3c8;}
                                             } ?>">
                                         <option value="0">--SELECT--</option>
                                         <?php
-                                        $sql = "SELECT *  FROM tbl_division ";
-                                        $course_data = $con->query($sql);
-                                        if ($course_data->num_rows >= 1) :
-                                            while ($row = mysqli_fetch_assoc($course_data)) :?>
-                                                <option value="<?php echo $row["Name"] ?>"><?php echo $row["Name"] ?></option>
-                                                <?php
-                                            endwhile;
-                                        endif;
-                                        ?>
+                                    $sql = "SELECT *  FROM tbl_division ";
+                                    $department_data = $con->query($sql);
+                                    if ($department_data->num_rows >= 1) :
+                                        while ($row = mysqli_fetch_assoc($department_data)) :?>
+                                            <option value="<?php echo $row["tblDivisionID"] ?>" <?php if ($row["tblDivisionID"]== $com): ?> ;
+                                                    <?php endif ?>>
+                                                <?php echo $row["Name"] ?>
+                                            </option>
+                                            <?php
+                                        endwhile;
+                                    endif;
+                                    ?>
                                     </select>
 
                                     <script type="text/javascript">
@@ -408,15 +425,32 @@ tr:hover {background-color: #e6c3c8;}
 
             <?php
             $rowcount=1;
-            $sql = "SELECT *  FROM tbl_schedule1";
+            $sql = "SELECT *  FROM tbl_schedule1  WHERE flag='ACTIVE' ";
             $division_data = $con->query($sql);
 
             if ($division_data->num_rows >= 1) {
-                while ($row = mysqli_fetch_assoc($division_data)) :?>
+                while ($row = mysqli_fetch_assoc($division_data)) :
+                
+                    $id= $row['sub_item'];
+                
+                
+                ?>
+
+
                     <tr>
                         <td><?php echo $rowcount++; ?></td>
                         <td><?php echo $row['Trainee_ID']; ?></td>
-                        <td><?php echo $row['sub_item']; ?></td>
+                        <td> <?php
+                         $sql = "SELECT *  FROM tbl_division WHERE tblDivisionID = '".$id."'  ";
+                         $institute_data = $con->query($sql);
+                         if ($institute_data->num_rows >= 1) :
+
+                          while ($row1 = mysqli_fetch_assoc($institute_data)) :?>
+                          <?php echo $row1['Name']?>
+                          <?php
+                        endwhile;
+                      endif;
+                      ?></td>
                         <td><?php echo $row['supervisor']; ?></td>
                         <td><?php echo $row['startdate']; ?></td>
                         <td><?php echo $row['enddate']; ?></td>
@@ -433,7 +467,7 @@ tr:hover {background-color: #e6c3c8;}
 
             </tbody>
         </table>
-
+        <a href='pastdetail.php'class="btn btn-success btn-xs">SHOW PAST DETAILS</a>
     </div>
 </form>
 
